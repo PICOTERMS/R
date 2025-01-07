@@ -66,36 +66,57 @@ The analysis follows these steps:
 ### 1. **Data Distribution Visualization**
 
 **Description:**  
-This section visualizes the distribution of key numerical variables. The histogram below illustrates the distribution of **Project Performance**, showing the spread and central tendency of responses.
+This section visualizes the Descriptive Statistics such as bar charts ,  histograms of distribution, density plot, boxplot, of key numerical variables, and also descrpitive statistics of categorical columns as below:
 
-![Histogram of Project Performance](images/project_performance_histogram.png)
+
+![image](https://github.com/user-attachments/assets/1a434465-60ff-4290-9b1c-a99db29b5d87)
+
+![image](https://github.com/user-attachments/assets/0348f3e8-b4f1-4be1-be16-8fcf1a87b58e)
+
+![image](https://github.com/user-attachments/assets/8ced7209-dbe0-42b7-a8ac-06a36c75ce47)
+
+![image](https://github.com/user-attachments/assets/bd36b2bc-0b00-4a75-9957-58eb0c56b245)
+
+![image](https://github.com/user-attachments/assets/1264adb3-7721-44d7-8e0e-cac2128c9cfc)
 
 ---
 
-### 2. **Correlation Matrix**
+
+### 2. **ANOVA Results Visualization**
 
 **Description:**  
-To understand the relationships between numerical variables, a correlation matrix was created. The heatmap below highlights the strength and direction of relationships between variables.
+This visualization shows the results of the 2 ANOVA tests. 
 
-![Correlation Matrix](images/correlation_matrix.png)
+*Q1:Does Innovation Performance of IS Project Teams significantly vary based on the levels of Innovation capability variables of wellbeing, cooperation, and competition ?*
 
----
+*Q2: Does Innovation Performance of IS Project Teams significantly vary based on the levels of Process Innovation (innoprocess), Product Innovation (innoproduct), and Flexibility?*
 
-### 3. **ANOVA Results Visualization**
-
-**Description:**  
-This visualization shows the results of the ANOVA tests. The box plot below highlights variations in **Project Performance** across different **Project Characteristics** categories.
-
-![Box Plot for ANOVA Results](images/anova_boxplot.png)
 
 ---
 
 ### 4. **Linear Regression Analysis**
 
 **Description:**  
-The scatter plot below, along with the regression line, demonstrates the relationship between **Project Coordination** and **Project Performance**, providing insights into the strength and direction of the association.
+Based on the results of two testes above the linear regression results are shown as below:
 
-![Linear Regression Plot](images/linear_regression_plot.png)
+![image](https://github.com/user-attachments/assets/ccbae910-7e58-4e0a-b0eb-0e86099d0fe0) 
+
+
+![image](https://github.com/user-attachments/assets/71df7310-c508-4fa4-9f9d-c29d2e0b206d) 
+
+
+![image](https://github.com/user-attachments/assets/3a1caae0-0570-4689-a91c-a221635738c6) 
+
+
+
+
+
+![image](https://github.com/user-attachments/assets/2c2270b6-35cd-439a-8e2d-e1b5bd27718a)
+
+
+![image](https://github.com/user-attachments/assets/770600c8-b058-4529-a7a8-be4a302842ed)
+
+
 
 ---
 
