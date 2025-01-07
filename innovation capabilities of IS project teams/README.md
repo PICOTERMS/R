@@ -125,7 +125,6 @@ Based on the results of two testes above the linear regression results are shown
 - **`Innovation Capabilities of IS Project Teams.qmd`**: The main Quarto Markdown file containing the analysis code and documentation.
 - **`report.html`**: The final self-contained HTML report.
 - **`PARA5.csv`**: The dataset used for analysis.
-- **`images/`**: Folder containing all visualizations.
 - **`README.md`**: This documentation file.
 
 ---
