@@ -1,0 +1,1220 @@
+---
+title: "Study the Innovation Capabilities of IS Project Teams"
+author: |
+  Hossein Habibinejad (h.financial.analyst@gmail.com)  
+  MohammadAli Kaleji (ali.kaleji.2023@gmail.com)
+format: 
+  html:
+    toc: true              # Include a Table of Contents
+    number-sections: true  # Number the sections
+    theme: cerulean        # Add a theme for styling
+    highlight-style: tango # Code highlighting style
+    self-contained: true   # Make the HTML file self-contained
+editor: visual
+description: "An analysis of innovation capabilities in IS project teams."
+---
+
+# Introduction
+
+This project focuses on studying the **innovation capabilities of IS project teams**, aiming to identify and analyze key factors influencing innovation in IT project environments. The study is grounded in a structured questionnaire designed to evaluate **Paradoxes in IT projects** across six key dimensions using a **5-point Likert scale**:
+
+1.  **Work atmosphere during the project**
+
+2.  **Socialisation and collaboration**
+
+3.  **Project coordination**
+
+4.  **Knowledge sharing and management**
+
+5.  **Project performance**
+
+6.  **Project characteristics**
+
+The collected data is stored in the file `PARA5.csv`, available on **GitHub** at:
+
+\
+[**Github /PICOTERMS/ R/ innovation capabilities of IS project teams**](https://github.com/PICOTERMS/R/tree/main/innovation%20capabilities%20of%20IS%20project%20teams)
+
+The dataset consists of **15 columns**, including **12 numerical variables** and **3 categorical variables**. The workflow of the project includes the following steps:
+
+1.  **Data Loading**: The dataset is imported into the analysis environment for further processing.
+
+2.  **Data Preprocessing**: Necessary cleaning and transformations are performed to prepare the data for analysis.
+
+3.  **Descriptive Analysis**: The project examines key statistical measures such as **tendency**, **dispersion**, and **distribution** for various variables to provide an overview of the data.
+
+4.  **Inferential Analysis**: Two **ANOVA tests** are conducted to explore significant differences across groups, followed by **linear regression modeling**. The equations and results of these regression analyses are also presented in detail.
+
+This project offers valuable insights into the interplay of different factors impacting innovation capabilities, helping to build a deeper understanding of IT project dynamics.
+
+## Installing Packages
+
+```{r}
+#| error: true
+#| eval: false
+
+# Data Manipulation and Transformation
+install.packages("readr")    # For reading CSV and text files
+install.packages("dplyr")    # For data wrangling
+install.packages("tidyr")    # For reshaping and tidying datasets
+
+# Visualization
+install.packages("ggplot2")  # For static plots and data visualization
+install.packages("patchwork") # For combining multiple ggplots
+install.packages("plotly")   # For interactive plots
+
+# Statistical Analysis
+install.packages("lmtest")   # For linear model diagnostics
+install.packages("car")      # For advanced regression analysis
+install.packages("psych")    # For descriptive statistics and psychometrics
+install.packages("e1071")    # For skewness and kurtosis calculations
+
+# Document Rendering
+install.packages("htmltools")  # For customizing HTML outputs
+install.packages("rmarkdown")  # For creating dynamic documents
+install.packages("knitr")      # For knitting R Markdown files
+install.packages("kableExtra", dependencies = TRUE)  # For better table rendering
+install.packages("quarto", dependencies = TRUE)      # For Quarto documents
+
+# Miscellaneous
+install.packages("corrplot")  # For visualizing correlation matrices
+install.packages("performance") # For regression model diagnostics
+install.packages("pdftools")   # For extracting text from PDF files
+install.packages("zoo")        # For time series analysis
+install.packages("naniar")     # For visualizing missing data
+install.packages("crayon")
+
+
+```
+
+## Reading Libraries
+
+```{r}
+
+# Load libraries for the analysis
+# Suppress startup messages for cleaner output
+suppressPackageStartupMessages({
+  # Data Manipulation
+  library(readr)       
+  library(dplyr)       
+  library(tidyr)       
+
+  # Visualization
+  library(ggplot2)     
+  library(patchwork)   
+
+  # Statistical Analysis
+  library(lmtest)      
+  library(car)         
+  library(psych)       
+  library(e1071)       
+
+  # Document Rendering and Tables
+  library(knitr)
+  library(kableExtra)  
+  library(quarto)      
+
+  # Miscellaneous
+  library(corrplot)    
+  library(performance) 
+  library(zoo)         
+  library(pdftools)
+  library(naniar)
+  library(crayon)
+
+})
+```
+
+## Reading Questionnaire (pdf) from GitHub
+
+The questionnaire aims to explore **paradoxes in IT project management** by gathering insights on participants' experiences in a past IT project. It consists of **six sections**:
+
+1.  **Work Atmosphere**
+
+2.  **Socialization and Collaboration**
+
+3.  **Project Coordination**
+
+4.  **Knowledge Management**
+
+5.  **Project Performance**
+
+6.  **Project Characteristics**
+
+The questions are primarily **Likert-scale-based**, with **5 choices** ranging from **Strongly Disagree** to **Strongly Agree**, or in some sections, **Poor to Excellent** and **Few to A Lot**, to evaluate team dynamics, knowledge management, and project outcomes.
+
+To see the questionnaire, you can [download it here](https://github.com/PICOTERMS/R/blob/main/Para5_survey_en.pdf).
+
+## Reading the Results in csv format from GitHub
+
+The following code chunk reads the dataset [**PARA5.csv**]{style="color:green"} directly from GitHub and displays its first few rows.
+
+This dataset represents the results of a questionnaire designed to explore [**paradoxes in IT project management**]{style="color:blue"}, focusing on participants' experiences in a [**past IT project**]{style="color:green"}.
+
+```{r}
+
+# The following code reads the dataset directly from GitHub and previews the first few rows.
+
+# Define the URL for the CSV file on GitHub
+url = "https://raw.githubusercontent.com/PICOTERMS/R/refs/heads/main/PARA5.csv"
+
+# Read the CSV file
+PARA5 = read.csv("https://raw.githubusercontent.com/PICOTERMS/R/refs/heads/main/innovation%20capabilities%20of%20IS%20project%20teams/PARA5.csv", check.names = FALSE)
+
+# Display column names
+head(PARA5)
+colnames(PARA5)
+
+
+
+```
+
+# Performing descriptive statistics & visualization for studying innovation capabilities
+
+## Overview
+
+```{r}
+# Check the dimensions of the dataset (rows and columns)
+dim(PARA5)
+
+# Display the structure of the dataset (column names and data types)
+
+str(PARA5)
+
+```
+
+### *DATA PREPARATION: HANDLE MISSING VALUES*
+
+#### Missing Data Table
+
+```{r}
+
+# Summarize the number of missing and non-missing values per column
+missing_summary = data.frame(
+  Column = colnames(PARA5),                 
+  Non_Missing = colSums(!is.na(PARA5)),     
+  Missing = colSums(is.na(PARA5))           
+)
+
+# Display the summary table using kable
+kable(missing_summary, caption = "Summary of Missing and Non-Missing Values")
+
+```
+
+#### Visualizing Missing Data
+
+```{r}
+
+# Summarize the number of Missing and Non-Missing values per column
+missing_summary <- data.frame(
+  Column = colnames(PARA5),                 # Column names
+  Non_Missing = colSums(!is.na(PARA5)),     # Count of non-missing values
+  Missing = colSums(is.na(PARA5))           # Count of missing values
+)
+
+# Reshape the data to long format for ggplot
+missing_long = missing_summary %>%
+  pivot_longer(cols = c(Non_Missing, Missing), 
+               names_to = "Type", values_to = "Count")
+
+# Plot the data using ggplot2
+ggplot(missing_long, aes(x = Column, y = Count, fill = Type)) +
+  geom_bar(stat = "identity", position = "stack") +  # Stacked bar chart
+  scale_fill_manual(values = c("Non_Missing" = "seagreen", "Missing" = "red")) +  # Custom colors
+  labs(title = "Missing vs Non-Missing Values per Column",
+       x = "Columns",
+       y = "Count of Values",
+       fill = "Data Status") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+
+
+```
+
+#### Replace NA values with 0 in columns
+
+```{r}
+PARA5$size[is.na(PARA5$size)] = 0
+PARA5$duration[is.na(PARA5$duration)] = 0
+PARA5$function.[is.na(PARA5$func)] = 0
+
+PARA5naok=PARA5
+write.csv(PARA5naok, "PARA5naok.csv", row.names = FALSE)
+
+#-------------------------------------------------------------------------------
+#After saving, manually upload the file to GitHub 
+# PARA5naok = read.csv("https://raw.githubusercontent.com/PICOTERMS/R/refs/heads/main/innovation%20capabilities%20of%20IS%20project%20teams/PARA5naok.csv",check.names = FALSE)
+```
+
+#### Encoding Categorical Columns as Numeric Factors for Modeling
+
+```{r}
+
+
+# This section converts three categorical columns ('size', 'duration', and 'function.') 
+# into numeric factors to simplify analysis and ensure compatibility with statistical methods.
+#All Changes will be put in PARA5_cleaned 
+
+
+
+# - 'size': Categorical representation of team sizes (e.g., '2–5 members',...).
+# - 'duration': Categorical representation of project duration (e.g., 'less than 1 year', ...).
+# - 'function.': Categorical representation of project functions (e.g., 'Project director',...).
+# ------------------------------------------------------------------------------------
+PARA5_cleaned=PARA5naok
+# Convert 'size' to a factor with numeric levels
+PARA5_cleaned$size = factor(PARA5_cleaned$size, 
+                    levels = c(0, "2–5 members", "6–10 members", "11–15 members", "16–20 members", "more than 20 members"), 
+                    labels = 0:5)
+
+
+# Convert 'duration' to a factor with numeric levels
+PARA5_cleaned$duration = factor(PARA5_cleaned$duration, 
+                             levels = c(0, "less than 1 year", "2-3 years", "4-5 years","6-9 years","more than 10 years"), 
+                             labels = 0:5)
+
+# Convert 'function.' to a factor with numeric levels
+PARA5_cleaned$function. = factor(PARA5_cleaned$function., 
+                              levels = c(0, "Project director", "Project manager","Actor of the project"), 
+                              labels = 0:3)
+
+#------------------------------------------------------------------------------------
+# Verifying the Changes
+# Print summary statistics for the updated columns to ensure correct conversion
+summary(PARA5_cleaned[, c("size", "duration", "function.")])
+
+# Retrieve category levels for reference 
+print("Levels of 'size':")
+print(levels(PARA5_cleaned$size))
+
+print("Levels of 'duration':")
+print(levels(PARA5_cleaned$duration))
+
+print("Levels of 'function.':")
+print(levels(PARA5_cleaned$function.))
+```
+
+#### Save Cleaned File in GitHub as a PARA5_cleaned.csv file
+
+```{r}
+
+# Save the cleaned dataset as a CSV file
+write.csv(PARA5_cleaned, "PARA5_cleaned.csv", row.names = FALSE)
+
+# After saving, manually upload the file to GitHub
+
+ # PARA5_cleaned.csv = read.csv("https://raw.githubusercontent.com/PICOTERMS/R/refs/heads/main/innovation%20capabilities%20of%20IS%20project%20teams/PRA5_cleaned.csv", check.names = FALSE)
+
+```
+
+# Statistical Analysis
+
+## **Descriptive Statistics**
+
+### Summary Statistics for Each Variable
+
+This section provides a detailed summary for each variable in the dataset **PARA5naok**. - For **numeric columns**, basic statistics such as *Minimum, Maximum, Mean,* and *...* are *displayed*. - For **categorical columns** , a frequency table is generated to show the count of each *unique value*.
+
+#### Summary Statistics for Numeric Columns_1
+
+```{r}
+# Load required libraries
+# library(dplyr)    For data manipulation
+# library(knitr)    For displaying tables
+# library(kableExtra)  For styling tables
+
+# Select only numeric columns from the dataset
+numeric_columns = PARA5naok %>%
+  select(where(is.numeric))  # Filter numeric columns only
+
+# Initialize a summary table for storing statistics
+summary_table_1 = data.frame(
+  Attribute = colnames(numeric_columns),                  # Column names
+  Min = sapply(numeric_columns, min, na.rm = TRUE),       # Minimum value
+  Max = sapply(numeric_columns, max, na.rm = TRUE),       # Maximum value
+  Mean = sapply(numeric_columns, mean, na.rm = TRUE),     # Mean
+  Median = sapply(numeric_columns, median, na.rm = TRUE), # Median
+  Standard_Deviation = sapply(numeric_columns, sd, na.rm = TRUE), # Standard deviation
+  Variance = sapply(numeric_columns, var, na.rm = TRUE)   # Variance
+)
+
+# Display the summary table using kable for a clean format
+kable(summary_table_1, format = "html", align = "c", 
+      caption = "Summary Statistics for Numeric Columns_1") %>%
+  kable_styling(full_width = FALSE, position = "center", 
+                bootstrap_options = c("striped", "hover", "condensed"))
+write.csv(summary_table_1, "numeric_summary_1_table.csv", row.names = FALSE)
+
+```
+
+#### Visualization for Numeric Columns_1
+
+```{r}
+
+# Reshape data to long format for visualization
+summary_table_long = summary_table_1 %>%
+  pivot_longer(cols = -Attribute, names_to = "Statistic", values_to = "Value")
+
+# Plot data using ggplot2
+ggplot(summary_table_long, aes(x = Attribute, y = Value, fill = Statistic)) +
+  geom_bar(stat = "identity", position = "dodge") +  # Bar chart with dodged bars
+  scale_fill_brewer(palette = "Set2") +  # Custom color palette
+  labs(
+    title = " Numeric Columns_1",
+    x = "Attributes",
+    y = "Values",
+    fill = "Statistics"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels
+
+```
+
+#### Summary Statistics for Numeric Columns_2
+
+```{r}
+# Load required libraries
+# library(dplyr) For data manipulation
+# library(knitr)  For displaying tables
+# library(kableExtra)  For styling tables
+# library(e1071)        For skewness and kurtosis calculations
+
+# Function to calculate the number of outliers based on IQR
+calculate_outliers <- function(x) {
+  q1 = quantile(x, 0.25, na.rm = TRUE)  # 1st Quartile
+  q3 = quantile(x, 0.75, na.rm = TRUE)  # 3rd Quartile
+  iqr = q3 - q1                         # Interquartile Range
+  sum(x < (q1 - 1.5 * iqr) | x > (q3 + 1.5 * iqr), na.rm = TRUE)  # Outliers
+}
+
+# Create a summary table with the requested statistics
+summary_table_2 = data.frame(
+  Attribute = colnames(numeric_columns),                                     # Column names
+  Q1 = sapply(numeric_columns, function(x) unname(quantile(x, 0.25, na.rm = TRUE))), # 1st Quartile
+  Q3 = sapply(numeric_columns, function(x) unname(quantile(x, 0.75, na.rm = TRUE))), # 3rd Quartile
+  IQR = sapply(numeric_columns, function(x) unname(IQR(x, na.rm = TRUE))),           # Interquartile Range
+  Skewness = sapply(numeric_columns, function(x) unname(skewness(x, na.rm = TRUE))), # Skewness
+  Kurtosis = sapply(numeric_columns, function(x) unname(kurtosis(x, na.rm = TRUE))), # Kurtosis
+  Range = sapply(numeric_columns, function(x) unname(max(x, na.rm = TRUE) - min(x, na.rm = TRUE))), # Range
+  Outliers = sapply(numeric_columns, calculate_outliers)                    # Number of Outliers
+)
+
+# Display the summary table using kable for a clean format
+kable(summary_table_2, format = "html", align = "c", 
+      caption = " Numeric Columns_2") %>%
+  kable_styling(full_width = FALSE, position = "center", 
+                bootstrap_options = c("striped", "hover", "condensed"))
+
+# Save the table as a CSV file
+write.csv(summary_table_2, "numeric_summary_2_table.csv", row.names = FALSE)
+
+
+
+
+```
+
+#### Visualization for Numeric Columns_2
+
+```{r}
+# Reshape the summary table to long format
+summary_table_long_2 = summary_table_2 %>%
+  pivot_longer(cols = -Attribute, names_to = "Statistic", values_to = "Value")
+
+# Plot data using ggplot2
+ggplot(summary_table_long_2, aes(x = Attribute, y = Value, fill = Statistic)) +
+  geom_bar(stat = "identity", position = "dodge") +  # Bar chart with dodged bars
+  scale_fill_brewer(palette = "Set3") +  # Custom color palette
+  labs(
+    title = "Descriptive Statistics for Numeric Columns (Q1, Q3, IQR, etc.)",
+    x = "Attributes",
+    y = "Values",
+    fill = "Statistics"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels
+
+```
+
+#### Distribution of Numeric Variables (Histogram)
+
+```{r}
+# Visualize the distribution of numeric variables using histograms
+library(ggplot2)
+library(tidyr)
+
+# Reshape the numeric data to a long format for ggplot
+numeric_long <- numeric_columns %>%
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "Value")
+
+# Plot histograms for each numeric variable
+ggplot(numeric_long, aes(x = Value)) +
+  geom_histogram(bins = 30, fill = "blue", alpha = 0.7) +  # Histogram with 30 bins
+  facet_wrap(~Variable, scales = "free", ncol = 2) +       # Separate plot for each variable
+  labs(
+    title = "Distribution of Numeric Variables (Histogram)", 
+    x = "Values", 
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+```
+
+#### Density Plot of Numeric Variables
+
+```{r}
+# Visualize the distribution of numeric variables using density plots
+ggplot(numeric_long, aes(x = Value, color = Variable, fill = Variable)) +
+  geom_density(alpha = 0.4) +                              # Density plot with transparency
+  facet_wrap(~Variable, scales = "free", ncol = 2) +       # Separate plot for each variable
+  labs(
+    title = "Density Plot of Numeric Variables", 
+    x = "Values", 
+    y = "Density"
+  ) +
+  theme_minimal()
+
+```
+
+::: {style="background-color: #f7f7f7; padding: 15px; border-radius: 5px;"}
+### [Distribution Analysis]{style="color: #007bff;"} [(Key Observations)]{style="color: green;"}
+
+------------------------------------------------------------------------
+
+#### [Numeric Variables]{style="color: #dc3545;"}
+
+1.  **General Trends:**
+    -   Most variables exhibit unimodal distributions.
+    -   Variables such as **innoproduct** have sharp peaks, indicating concentrated responses.
+2.  **Specific Variables:**
+    -   **Competition & Cooperation:** Slightly right-skewed, with higher values being more frequent.
+    -   **Culture.craft:** Bimodal, suggesting two distinct response groups.
+    -   **Distance:** Flat distribution, indicating a wide spread of responses.
+    -   **Formalization & Flexibility:** Right-skewed, dominated by higher responses.
+    -   **Innoprocess:** Sharp peak, reflecting strong agreement in responses.
+3.  **Insights:**
+    -   High concentration in **innoproduct** and **innoprocess** may indicate strong consensus or lack of diversity.
+    -   Bimodal distribution in **Culture.craft** highlights potential subgroups in the data.
+4.  **Recommendations:**
+    -   Investigate the cause of bimodality in **Culture.craft**.
+    -   Explore the reasons for high concentration in variables like **innoproduct**.
+:::
+
+#### Dispersion of Numeric Variables (Boxplot)
+
+```{r}
+# Visualize the dispersion of numeric variables using boxplots
+ggplot(numeric_long, aes(x = Variable, y = Value, fill = Variable)) +
+  geom_boxplot(outlier.color = "red", outlier.shape = 16, outlier.size = 2) +  # Boxplot with red outliers
+  labs(
+    title = "Dispersion of Numeric Variables (Boxplot)", 
+    x = "Variables", 
+    y = "Values"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+
+```
+
+::: {style="background-color: #f7f7f7; padding: 15px; border-radius: 5px;"}
+### [Dispersion Analysis]{style="color: #007bff;"} [(Key Observations)]{style="color: green;"}
+
+------------------------------------------------------------------------
+
+#### [Numeric Variables]{style="color: #dc3545;"}
+
+1.  **Outliers:**
+    -   Significant outliers are observed in:
+        -   **Flexibility** and **Formalization**: Indicating extreme responses in specific groups.
+        -   **Pressure**: Multiple outliers suggest varying perceptions among participants.
+        -   **Culture.craft**: Few outliers, potentially representing minority views.
+2.  **Interquartile Range (IQR):**
+    -   Variables like **Innoproduct** and **Innoprocess** have a small IQR, indicating consistent responses.
+    -   **Distance** and **Culture.national** exhibit a wide IQR, suggesting high variability among respondents.
+3.  **Central Tendency:**
+    -   Variables such as **Performance** and **Wellbeing** are centered around their medians, indicating balanced distributions.
+    -   **Competition** and **Cooperation** have slightly lower medians compared to their ranges.
+4.  **Range of Responses:**
+    -   **Culture.craft** and **Flexibility** exhibit the widest ranges, reflecting diverse opinions.
+    -   **Innoproduct** has a narrower range, pointing to strong consensus.
+5.  **Recommendations:**
+    -   Explore the reasons behind outliers in **Pressure** and **Flexibility** to ensure data quality or identify unique groups.
+    -   Investigate the high variability in **Distance** and **Culture.national** to understand contextual factors influencing responses.
+:::
+
+#### Summary Statistics for **categorical columns**
+
+```{r}
+
+# Select only categorical (character) columns
+categorical_columns = PARA5naok[, sapply(PARA5naok, is.character)]
+
+# Create a summary table for categorical columns
+summary_table_categorical = data.frame(
+  Attribute = colnames(categorical_columns),                             # Column names
+  Unique_Categories = sapply(categorical_columns, function(x) length(unique(na.omit(x)))), # Unique categories
+  Most_Frequent = sapply(categorical_columns, function(x) names(sort(table(x), decreasing = TRUE))[1]), # Most frequent category
+  Frequency = sapply(categorical_columns, function(x) max(table(x, useNA = "no"))),        # Frequency of most frequent category
+  Missing_Values = sapply(categorical_columns, function(x) sum(is.na(x)))  # Count of missing values
+)
+
+# Display the summary table using kable
+kable(summary_table_categorical, format = "html", align = "c", 
+      caption = " Categorical Columns")
+
+write.csv(categorical_columns, "categorical columns.csv", row.names = FALSE)
+
+
+```
+
+#### Visualization for Categorical Columns
+
+```{r}
+# Select numeric columns for visualization
+
+categorical_numeric = summary_table_categorical %>%
+  select(Attribute, Unique_Categories, Frequency)
+
+# Reshape numeric data to long format
+categorical_numeric_long = categorical_numeric %>%
+  pivot_longer(cols = -Attribute, names_to = "Statistic", values_to = "Value")
+
+# Plot numeric data
+ggplot(categorical_numeric_long, aes(x = Attribute, y = Value, fill = Statistic)) +
+  geom_bar(stat = "identity", position = "dodge") +  # Bar chart with dodged bars
+  labs(
+    title = "Descriptive Statistics for Categorical Columns",
+    x = "Attributes",
+    y = "Values",
+    fill = "Statistics"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels
+
+# Display Most Frequent categories in a simple table
+print("Most Frequent Categories:")
+summary_table_categorical %>%
+  select(Attribute, Most_Frequent) %>%
+  print()
+
+```
+
+::: {style="background-color: #f7f7f7; padding: 15px; border-radius: 5px;"}
+### [Analysis the Results]{style="color: #007bff;"} [(Explain what we found)]{style="color: green;"}
+
+------------------------------------------------------------------------
+
+#### [Numeric Columns]{style="color: #dc3545;"}
+
+1.  **Distributions:**
+    -   Most variables exhibit symmetric or slightly skewed distributions, with a few exceptions like:
+        -   **Flexibility:** Negative skewness.\
+        -   **Competition:** Positive skewness.\
+    -   The **Culture.craft** variable has a strong negative skew (-1.39), indicating that most observations cluster at higher values (closer to 5).
+2.  **Variability:**
+    -   Variables like **Culture.national** and **distance** show high variability (**variance \> 1.5**), suggesting differences in organizational or cultural contexts.\
+    -   **Innoproduct** has a narrow interquartile range (**IQR = 0.5**), indicating consistency in product innovation scores.
+3.  **Outliers:**
+    -   Significant outliers are observed in:
+        -   **Flexibility (15)**\
+        -   **Innoproduct (41)**\
+        -   **Formalization (5)**\
+    -   These outliers could stem from either extreme behaviors in specific teams or errors in data collection.
+4.  **Central Tendency:**
+    -   Variables like **wellbeing**, **pressure**, and **performance** cluster around mean values of approximately **3**, suggesting a generally balanced scale of evaluation.
+
+------------------------------------------------------------------------
+
+#### [Categorical Columns]{style="color: #28a745;"}
+
+1.  **Size:**
+    -   Small teams (**2–5 members** and **6–10 members**) dominate the dataset, collectively comprising most of the data.\
+    -   Larger teams (**16–20 members** and **more than 20 members**) are rare.\
+    -   Small team size likely aligns with agile and more focused organizational structures.
+2.  **Duration:**
+    -   Most projects fall within **"less than 1 year"** or **"2–3 years"**, reflecting a preference for short- to medium-term planning.\
+    -   Longer durations (**"4–5 years"** or **"more than 10 years"**) are uncommon, likely indicating specialized or large-scale projects.
+3.  **Function:**
+    -   **Project Manager** appears as the most common role, signifying its pivotal importance in overseeing and managing projects.\
+    -   **Actor of the project** represents individuals executing the work, while **Project Director** appears less frequently, emphasizing its strategic and less operational role.
+:::
+
+::: {style="background-color: #f7f7f7; padding: 15px; border-radius: 5px;"}
+### [Interpretation of the Results]{style="color: #007bff;"} [(Explain why)]{style="color: green;"}
+
+------------------------------------------------------------------------
+
+#### [Numeric Columns]{style="color: #dc3545;"}
+
+1.  **Cultural Dimensions:**
+    -   **High Variability in Culture.national:**
+        -   The broad range in cultural scores could reflect **diverse** organizational practices, potentially tied to regional or industrial differences.\
+    -   **Skewness in Culture.craft:**
+        -   Negative skewness suggests that craftsmanship-oriented cultures are **widespread** or **dominant** in this dataset.
+2.  **Innovation (Process vs. Product):**
+    -   **Consistency in innoproduct (lower IQR):**
+        -   This might indicate standardized approaches to product innovation.\
+    -   **Variability in innoprocess (higher IQR):**
+        -   Suggests variability in process innovation strategies.
+3.  **Outliers:**
+    -   Extreme values in **flexibility** and **innoproduct** might highlight contrasting organizational dynamics, where some teams demonstrate unusually high innovation or adaptability compared to others.
+
+------------------------------------------------------------------------
+
+#### [Categorical Columns]{style="color: #28a745;"}
+
+1.  **Size:**
+    -   The dominance of small teams (**2–5 members**) may indicate a focus on agile methodologies or environments requiring close collaboration and rapid decision-making.\
+    -   The rarity of large teams (**more than 20 members**) aligns with the logistical challenges and inefficiencies often associated with larger groups.
+2.  **Duration:**
+    -   The prevalence of shorter durations reflects:
+        -   A trend toward iterative, phased project delivery.\
+        -   A preference for minimizing risk in long-term projects.
+3.  **Function:**
+    -   The abundance of **Project Managers** aligns with their central role in balancing strategy and execution, acting as key decision-makers.\
+    -   Fewer **Project Directors** may indicate their involvement in only high-level or specialized projects.
+:::
+
+::: {style="background-color: #f7f7f7; padding: 15px; border-radius: 5px;"}
+### [Combined Analysis]{style="color: #007bff;"} [(Numeric + Categorical )]{style="color: green;"}
+
+------------------------------------------------------------------------
+
+#### [Team Size and Numeric Variables]{style="color: #dc3545;"}
+
+-   **Smaller teams** (e.g., **2–5 members**) likely contribute to **higher flexibility scores**, as smaller groups can adapt more efficiently.\
+-   **Larger teams** might correlate with **greater formalization** and **lower cooperation**, reflecting the challenges of coordination in larger groups.
+
+------------------------------------------------------------------------
+
+#### [Duration and Performance]{style="color: #28a745;"}
+
+-   **Short-term projects** (e.g., **less than 1 year**) could explain **higher performance** and **innoproduct scores** due to the clarity of goals and immediate results.\
+-   **Longer projects** may exhibit more variability in performance, as they face evolving challenges over time.
+
+------------------------------------------------------------------------
+
+#### [Roles and Innovation]{style="color: #ffc107;"}
+
+-   **Project Managers** might positively influence **innoproduct** due to their role in managing resources and aligning efforts with project goals.\
+-   **Actors of the project** likely have a stronger impact on **innoprocess**, as they execute the day-to-day tasks that lead to innovation.
+
+------------------------------------------------------------------------
+
+#### [Cultural Contexts]{style="color: #17a2b8;"}
+
+-   Teams with **higher Culture.craft scores** may achieve **higher flexibility** and **cooperation**, driven by a shared focus on craftsmanship and quality.
+
+------------------------------------------------------------------------
+
+#### **Concluding Insights**
+
+-   The dataset reveals a **balance** between **innovation**, **culture**, and **team dynamics**, with **smaller, shorter-term teams** being dominant.\
+-   Numeric and categorical data align well, showing trends like **small teams being more flexible and agile**.\
+-   **Outliers and variability** in certain metrics highlight areas for further investigation, such as differences in **team structures** or **regional practices**.
+:::
+
+## Inferential Statistics
+
+### Excluding `size`, `duration`, and `function.` Columns
+
+#### Reasons for Exclusion
+
+1.  **Missing Data Representation**:
+    -   These columns have missing data that we replaced with zeros during the data cleaning process.
+    -   However, the zeros do not represent actual values but rather indicate the absence of data.
+2.  **Impractical to Impute**:
+    -   For **`function.`**, replacing missing values with the most frequent value (mode), median, or mean is inappropriate, as this column represents roles that cannot be estimated meaningfully.
+    -   For **`size`** and **`duration`**, imputation is also problematic since:
+        -   We do not know the actual team size.
+        -   We do not know the duration of the respective projects.
+    -   Assigning arbitrary or average values to these columns would introduce bias into the analysis.
+3.  **Impact on Analysis**:
+    -   Including these columns with inappropriate imputed values could distort the inferential and regression results.
+    -   To ensure the integrity of the study, we exclude these columns from inferential analysis and regression.
+
+------------------------------------------------------------------------
+
+### Hypothesis Testing Using ANOVA(Test1)
+
+#### Research Question 1:
+
+[**Q1:**Does **Innovation Performance** **of IS Project Teams** significantly vary based on the levels of Innovation capability variables of *wellbeing*, *cooperation*, and *competition* ?]{style="color: green;"}
+
+------------------------------------------------------------------------
+
+#### Hypotheses:
+
+1.  **Null Hypothesis ((H0))**:\
+    There is no significant difference in the mean `performance` across the levels of each independent variable (`wellbeing`, `cooperation`, and `competition`).
+
+2.  **Alternative Hypothesis ((H1))**:\
+    At least one level of the independent variables causes a significant difference in the mean `performance`.
+
+------------------------------------------------------------------------
+
+#### Methodology:
+
+-   **Test Type**:\
+    A one-way ANOVA is applied to evaluate the impact of each independent variable on the dependent variable `performance`.
+
+-   **Significance Level**:\
+    The test is conducted at a **95% confidence level** ((\alpha = 0.05)).
+
+-   **Assumptions for ANOVA**:
+
+    1.  The dependent variable (`performance`) is continuous.\
+    2.  The independent variables (`wellbeing`, `cooperation`, and `competition`) are categorical or treated as factors.\
+    3.  Observations are independent.\
+    4.  The variance of `performance` is approximately equal across the levels of each independent variable.
+
+------------------------------------------------------------------------
+
+#### Steps:
+
+1.  **Fit Linear Models**:\
+    For each independent variable, a linear model is fitted with `performance` as the dependent variable.
+
+2.  **Perform ANOVA**:\
+    ANOVA is conducted for each model to assess whether the independent variable significantly impacts `performance`.
+
+3.  **Decision Rule**:
+
+    -   If (p \< 0.05), reject (H_0) and conclude that the variable significantly impacts `performance`.\
+    -   If (p \geq 0.05), fail to reject (H_0) and conclude that there is no significant impact.
+
+------------------------------------------------------------------------
+
+##### Interpretation of Results:
+
+-   Variables with significant (p)-values indicate that the levels of those variables have a meaningful effect on `performance`.
+-   These variables can then be included in the regression model for further analysis.
+
+------------------------------------------------------------------------
+
+```{r}
+# Load necessary libraries
+library(car)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+
+# Perform ANOVA for independent variables and prepare results
+anova_results_df = PARA5_cleaned %>%
+  select(wellbeing, cooperation, competition) %>%
+  names() %>%
+  lapply(function(var) {
+    # Fit linear model and perform Type II ANOVA
+    model = lm(as.formula(paste("performance ~", var)), data = PARA5_cleaned)
+    anova_result = Anova(model, type = "II")
+    
+    # Extract key statistics
+    tibble(
+      Variable = var,
+      F_statistic = round(anova_result$`F value`[1], 2),
+      p_value = format(anova_result$`Pr(>F)`[1], scientific = FALSE),
+      Significant = ifelse(anova_result$`Pr(>F)`[1] < 0.05, "Yes", "No")
+    )
+  }) %>%
+  bind_rows()  # Combine all results into a single data frame
+
+# Display results as a styled table
+anova_results_df %>%
+  kable(
+    format = "html", 
+    caption = "ANOVA Results for Independent Variables",
+    col.names = c("Variable", "F-Statistic", "p-Value", "Significant")
+  ) %>%
+  kable_styling(
+    full_width = FALSE,
+    bootstrap_options = c("striped", "hover", "condensed")
+  )
+
+```
+
+#### **Overall Conclusion**:
+
+-   **Significant Variables**: `wellbeing` and `cooperation` significantly affect `performance`. These variables should be included in the regression model for further analysis.
+
+-   **Non-Significant Variable**: `competition` does not show a significant relationship with `performance` and may be excluded from the regression model, unless theoretical justification exists for its inclusion.
+
+——————————————————————————————————————————————————————————
+
+### Regression Analysis
+
+#### Objective:
+
+To build a regression model that predicts `performance` using significant independent variables `wellbeing` and `cooperation`.
+
+#### Methodology:
+
+1.  Fit a multiple linear regression model with `wellbeing` and `cooperation` as predictors.
+2.  Evaluate the model using:
+    -   Coefficients of predictors.
+    -   Overall model significance ((R\^2) and Adjusted (R\^2)).
+    -   Diagnostic plots for assumptions.
+
+#### Assumptions:
+
+-   Linearity between predictors and `performance`.
+-   Normality of residuals.
+-   Homoscedasticity (equal variance of residuals).
+-   Independence of observations.
+
+#### **Multiple Linear Regression: Examining the Impact of Wellbeing and Cooperation on Performance**
+
+```{r}
+# Load necessary library
+
+# Fit the regression model
+regression_model = lm(performance ~ wellbeing + cooperation, data = PARA5_cleaned)
+
+# Print summary of the model
+summary(regression_model)
+
+# Diagnostic Plots
+par(mfrow = c(2, 2))  # Arrange plots in a 2x2 grid
+plot(regression_model)  # Built-in diagnostic plots
+
+# Visualization of Regression Fit
+PARA5_cleaned %>%
+  ggplot(aes(x = wellbeing, y = performance)) +
+  geom_point(alpha = 0.6, color = "blue") +  # Scatter plot
+  geom_smooth(method = "lm", color = "red", se = TRUE) +  # Regression line with confidence interval
+  labs(
+    title = "Regression Fit: Wellbeing vs Performance",
+    x = "Wellbeing",
+    y = "Performance"
+  ) +
+  theme_minimal()
+
+PARA5_cleaned %>%
+  ggplot(aes(x = cooperation, y = performance)) +
+  geom_point(alpha = 0.6, color = "green") +  # Scatter plot
+  geom_smooth(method = "lm", color = "red", se = TRUE) +  # Regression line with confidence interval
+  labs(
+    title = "Regression Fit: Cooperation vs Performance",
+    x = "Cooperation",
+    y = "Performance"
+  ) +
+  theme_minimal()
+
+```
+
+#### Constructing and Displaying the Regression Equation
+
+```{r}
+
+# Fit the regression model
+regression_model = lm(performance ~ wellbeing + cooperation, data = PARA5_cleaned)
+
+# Extract coefficients
+coefficients = coef(regression_model)
+
+# Construct the regression equation as a string
+regression_equation = paste0(
+  "performance = ", round(coefficients[1], 2), 
+  " + (", round(coefficients[2], 2), " * wellbeing)", 
+  " + (", round(coefficients[3], 2), " * cooperation)"
+)
+
+# Print the equation in bold red
+cat(red$bold(regression_equation), "\n")
+
+```
+
+::: {style="background-color: #f7f7f7; padding: 15px; border-radius: 5px;"}
+### [Regression Analysis Results]{style="color: #007bff;"} [(Key Observations)]{style="color: green;"}
+
+------------------------------------------------------------------------
+
+#### [Model Summary]{style="color: #dc3545;"}
+
+1.  **Overall Model Fit:**
+    -   **Multiple R-squared**: 0.141\
+        This indicates that approximately **14.1%** of the variance in `performance` is explained by the predictors (`wellbeing` and `cooperation`).
+    -   **Adjusted R-squared**: 0.1317\
+        After adjusting for the number of predictors, the model still explains **13.17%** of the variance in `performance`.
+    -   **F-statistic**: 15.11 (p-value = 8.418e-07)\
+        The overall model is **statistically significant**, indicating that at least one of the predictors contributes to explaining the variance in `performance`.
+2.  **Coefficients Interpretation:**
+    -   **Intercept**:
+        -   Estimate: 1.77376\
+            When both `wellbeing` and `cooperation` are at zero, the expected value of `performance` is approximately **1.77**.
+    -   **Wellbeing**:
+        -   Estimate: 0.25536 (p-value = 0.000211)\
+            For every one-unit increase in `wellbeing`, `performance` increases by approximately **0.255**, holding `cooperation` constant. This effect is **statistically significant**.
+    -   **Cooperation**:
+        -   Estimate: 0.24486 (p-value = 0.000122)\
+            For every one-unit increase in `cooperation`, `performance` increases by approximately **0.245**, holding `wellbeing` constant. This effect is **statistically significant**.
+3.  **Residual Analysis:**
+    -   **Residual standard error**: 0.7136\
+        The typical deviation of observed values from the predicted values is approximately **0.71**.
+    -   Residuals appear to be reasonably distributed, with a median close to zero.
+
+------------------------------------------------------------------------
+
+#### [Insights]{style="color: #dc3545;"}
+
+-   Both `wellbeing` and `cooperation` have a **significant positive impact** on `performance`.
+-   While the model explains a modest portion of the variance in `performance`, the predictors are meaningful contributors.
+:::
+
+::: {style="background-color: #edf2f7; padding: 15px; border-radius: 5px;"}
+### [**Interpretation of the Results Through the Literature**]{style="color: #0056b3;"}
+
+------------------------------------------------------------------------
+
+#### **The Findings and Their Context in Literature**
+
+The regression analysis indicates that both [**wellbeing**]{style="color: #28a745;"} and [**cooperation**]{style="color: #007bff;"} significantly and positively influence the performance of Information Systems (IS) project teams. This aligns with existing literature, which underscores the importance of these factors in enhancing team performance. Studies have demonstrated that [**both wellbeing and cooperation**]{style="color: #ff5733;"} have a significant positive impact on performance.
+
+------------------------------------------------------------------------
+
+#### [**Wellbeing and Team Performance**]{style="color: #28a745;"}
+
+1.  **Moura, Dominguez, and Varajão (2018):**
+    -   This study identifies **mutual trust**—a component closely related to wellbeing—as a facilitator of high team performance. The authors emphasize that **non-technical factors**, including those affecting team members' wellbeing, are crucial for achieving high performance.
+    -   *Citation*: Moura, I., Dominguez, C., & Varajão, J. (2019). Information systems project teams: factors for high performance. *Team Performance Management: An International Journal, 25*(1/2), 69-83.
+2.  **Mtsweni (2024):**
+    -   Highlights the negative impact of **burnout, fatigue, and stress** on team performance. The study finds that trust within the team improves **psychological, workplace, and life wellbeing**, thereby enhancing productivity and team performance.
+    -   *Citation*: Mtsweni, E. S. (2024, June). Improving Employee Well-Being of Members of Information Systems Project Team Through Trust. In *Science and Information Conference* (pp. 433-452). Cham: Springer Nature Switzerland.
+3.  **Examining High Performance Teams in Information Systems Projects (2008):**
+    -   Focuses on characteristics of high-performing IS project teams, emphasizing the critical role of **team satisfaction and morale** (key components of wellbeing) in achieving high performance.
+    -   *Citation*: Authors of the study (2008). Examining High Performance Teams in Information Systems Projects.
+
+------------------------------------------------------------------------
+
+#### [**Cooperation and Team Performance**]{style="color: #007bff;"}
+
+1.  **Kill Chaos with Kindness (2022):**
+    -   Demonstrates that **agreeableness** (a characteristic tied to cooperative behavior) enhances team performance, particularly under uncertain conditions.
+    -   Citation: Lim, S. L., Bentley, P. J., Peterson, R. S., Hu, X., & Prouty McLaren, J. (2023). Kill chaos with kindness: Agreeableness improves team performance under uncertainty. Collective Intelligence, 2(1), 26339137231158584.
+2.  **Linking Trust and Collaboration in Project Teams (2017):**
+    -   Examines how **trust and collaboration** within teams contribute to project success. Key components like **commitment and coordination** enhance project performance.
+    -   *Citation: Bond-Barnard, T. J., Fletcher, L., & Steyn, H. (2018). Linking trust and collaboration in project teams to project management success. International Journal of Managing Projects in Business, 11(2), 432-457.*
+3.  **Building Highly Effective IS Project Teams (1999):**
+    -   Highlights that teams relying on **integrated efforts** aimed at common goals (indicative of high cooperation) are more productive than the sum of individual efforts.
+    -   *Citation*: Smith, D. C., Harris, M., Myersclough, P., & Wood, A. (2000). Building highly effective information systems project teams: an explanatory study.
+
+------------------------------------------------------------------------
+
+#### [**Conclusion**]{style="color: #dc3545;"}
+
+These studies corroborate our findings, emphasizing that both [**wellbeing**]{style="color: #28a745;"} and [**cooperation**]{style="color: #007bff;"} are integral to enhancing the performance of IS project teams. Fostering a supportive environment that prioritizes team members' wellbeing and encourages cooperative interactions can lead to improved project outcomes.
+:::
+
+### Hypothesis Testing Using ANOVA(Test1)
+
+#### Research Question 2:
+
+[Q2: Does **Innovation Performance of IS Project Teams** significantly vary based on the levels of *Process Innovation (innoprocess)*, *Product Innovation (innoproduct)*, and *Flexibility*?]{style="color:green;"}
+
+------------------------------------------------------------------------
+
+#### Hypotheses:
+
+-   **Null Hypothesis ((H₀))**:\
+    There is no significant difference in the mean **Innovation Performance** across the levels of each independent variable (**Process Innovation**, **Product Innovation**, and **Flexibility**).
+
+-   **Alternative Hypothesis ((H₁))**:\
+    At least one level of the independent variables (**Process Innovation**, **Product Innovation**, or **Flexibility**) causes a significant difference in the mean **Innovation Performance**.
+
+------------------------------------------------------------------------
+
+#### Methodology:
+
+-   **Test Type**:\
+    A one-way ANOVA is applied to evaluate the impact of each independent variable on the dependent variable **Innovation Performance**.
+
+-   **Significance Level**:\
+    The test is conducted at a 95% confidence level (**(**\alpha = 0.05)).
+
+------------------------------------------------------------------------
+
+#### Assumptions for ANOVA:
+
+1.  The dependent variable (**Innovation Performance**) is continuous.\
+2.  The independent variables (**Process Innovation**, **Product Innovation**, and **Flexibility**) are categorical or treated as factors.\
+3.  Observations are independent.\
+4.  The variance of **Innovation Performance** is approximately equal across the levels of each independent variable.
+
+------------------------------------------------------------------------
+
+```{r}
+# Load necessary libraries
+library(car)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+
+# Perform ANOVA for independent variables and prepare results
+anova_results_df = PARA5_cleaned %>%
+  select(innoprocess, innoproduct, flexibility) %>%
+  names() %>%
+  lapply(function(var) {
+    # Fit linear model and perform Type II ANOVA
+    model = lm(as.formula(paste("performance ~", var)), data = PARA5_cleaned)
+    anova_result = Anova(model, type = "II")
+    
+    # Extract key statistics
+    tibble(
+      Variable = var,
+      F_statistic = round(anova_result$`F value`[1], 2),
+      p_value = format(anova_result$`Pr(>F)`[1], scientific = FALSE),
+      Significant = ifelse(anova_result$`Pr(>F)`[1] < 0.05, "Yes", "No")
+    )
+  }) %>%
+  bind_rows()  # Combine all results into a single data frame
+
+# Display results as a styled table
+anova_results_df %>%
+  kable(
+    format = "html", 
+    caption = "ANOVA Results for Process Innovation, Product Innovation, and Flexibility",
+    col.names = c("Variable", "F-Statistic", "p-Value", "Significant")
+  ) %>%
+  kable_styling(
+    full_width = FALSE,
+    bootstrap_options = c("striped", "hover", "condensed")
+  )
+```
+
+#### **Overall Conclusion:**
+
+-   **Significant Variable:**
+
+    -   **innoprocess (Process Innovation):**\
+        This variable significantly affects **Innovation Performance** . It should be included in the regression model for further analysis.
+
+-   **Non-Significant Variables:**
+
+    -   **innoproduct (Product Innovation):**\
+        This variable does not show a significant relationship with **Innovation Performance** . It may be excluded from the regression model unless there is theoretical justification for its inclusion.
+
+    -   **flexibility:**\
+        This variable does not show a significant relationship with **Innovation Performance** (p=0.1060p = 0.1060p=0.1060). It may also be excluded from the regression model unless supported by theoretical or contextual relevance.
+
+——————————————————————————————————————————————————————————
+
+### **Regression Analysis**
+
+#### **Objective:**
+
+To build a regression model that predicts **Innovation Performance** using the significant independent variable **innoprocess (Process Innovation)** identified through the ANOVA test.
+
+#### Simple Linear Regression: Examining the Impact of Process Innovation on Innovation Performance
+
+```{r}
+# Fit the regression model
+regression_model = lm(performance ~ innoprocess, data = PARA5_cleaned)
+
+# Print summary of the model
+summary(regression_model)
+
+# Diagnostic Plots
+par(mfrow = c(2, 2))  # Arrange plots in a 2x2 grid
+plot(regression_model)  # Built-in diagnostic plots
+
+# Visualization of Regression Fit
+library(ggplot2)
+
+PARA5_cleaned %>%
+  ggplot(aes(x = innoprocess, y = performance)) +
+  geom_point(alpha = 0.6, color = "blue") +  # Scatter plot
+  geom_smooth(method = "lm", color = "red", se = TRUE) +  # Regression line with confidence interval
+  labs(
+    title = "Regression Fit: Process Innovation vs Performance",
+    x = "Process Innovation (innoprocess)",
+    y = "Innovation Performance"
+  ) +
+  theme_minimal()
+
+```
+
+#### Constructing and Displaying the Regression Equation
+
+```{r}
+
+# Load necessary library
+library(crayon)
+
+# Fit the regression model
+regression_model = lm(performance ~ innoprocess, data = PARA5_cleaned)
+
+# Extract coefficients
+coefficients = coef(regression_model)
+
+# Construct the regression equation as a string
+regression_equation = paste0(
+  "performance = ", round(coefficients[1], 2), 
+  " + (", round(coefficients[2], 2), " * innoprocess)"
+)
+
+# Print the equation in bold red
+cat(red$bold(regression_equation), "\n")
+
+```
+
+::: {style="background-color: #f7f7f7; padding: 15px; border-radius: 5px;"}
+### [Regression Analysis Results]{style="color: #007bff;"} [(Key Observations)]{style="color: green;"}
+
+------------------------------------------------------------------------
+
+#### [Model Summary]{style="color: #dc3545;"}
+
+1.  **Overall Model Fit:**
+    -   **Multiple R-squared**: 0.062\
+        Approximately **6.2%** of the variance in `performance` is explained by the predictor (`innoprocess`).
+    -   **Adjusted R-squared**: 0.057\
+        After adjusting for the number of predictors, the model explains **5.7%** of the variance in `performance`.
+    -   **F-statistic**: 6.47 (p-value = 0.0118)\
+        The model is **statistically significant**, indicating that the predictor contributes to explaining the variance in `performance`.
+2.  **Coefficients Interpretation:**
+    -   **Intercept**:
+        -   Estimate: 2.50\
+            When `innoprocess` is at zero, the expected value of `performance` is approximately **2.50**.
+    -   **Process Innovation (`innoprocess`)**:
+        -   Estimate: 0.40 (p-value = 0.0118)\
+            For every one-unit increase in `innoprocess`, `performance` increases by approximately **0.40**. This effect is **statistically significant**.
+3.  **Residual Analysis:**
+    -   **Residual standard error**: 0.745\
+        The typical deviation of observed values from the predicted values is approximately **0.745**.
+    -   Residuals appear reasonably distributed, supporting the validity of the model.
+
+------------------------------------------------------------------------
+
+#### [Insights]{style="color: red;"}
+
+-   `innoprocess` has a **significant positive impact** on `performance`.
+-   While the model explains a relatively small portion of the variance ((R\^2 = 6.2%)), `innoprocess` is a meaningful contributor to predicting `performance`.
+:::
+
+::: {style="background-color: #edf2f7; padding: 15px; border-radius: 5px;"}
+### [**Interpretation of the Results Through the Literature**]{style="color: #0056b3;"}
+
+------------------------------------------------------------------------
+
+#### **The Findings and Their Context in Literature**
+
+The regression analysis indicates that [**Process Innovation (innoprocess)**]{style="color: #28a745;"} significantly influences the performance of IS Project Teams, while [**Product Innovation (innoproduct)**]{style="color: #dc3545;"} and [**Flexibility**]{style="color: #dc3545;"} do not show a significant impact. To contextualize these findings within existing literature, let's explore studies that examine the relationship between these variables and team performance.
+
+------------------------------------------------------------------------
+
+#### [**Process Innovation and Team Performance**]{style="color: #28a745;"}
+
+1.  **Heldal (2023):**
+    -   This study investigated **Design Thinking (DT)** teams and found that a disciplined approach to DT processes enhances **team reflexivity** and **psychological safety**, leading to improved innovative performance.
+    -   *Citation*: Heldal, F. (2023). Design thinking teams and team innovation performance. *Journal of Innovation and Entrepreneurship, 12*(1), 85.
+2.  **Zaman et al. (2022):**
+    -   This research highlighted that **project management innovation**, which includes innovative processes, positively influences project success. They emphasized that adopting **innovative approaches** in project management leads to better performance outcomes.
+    -   *Citation*: Zaman, U., Khan, M. N., Raza, S. H., & Farías, P. (2022). Fall seven times, stand up eight: Linking project management innovation, project governance, and high-performance work practices to project success. *Frontiers in Psychology, 13*, 902816.
+3.  **Dumay (2004):**
+    -   This study discussed how **process thinking** impacts information systems development, noting that a focus on business processes can increase the **structural complexity** of IS but also lead to more coherent and effective **cross-functional architectures**, thereby enhancing team performance.
+    -   *Citation*: Dumay, M. (2004). Business Processes: The theoretical impact of process thinking on information systems development. *arXiv preprint cs/0409037.*
+
+------------------------------------------------------------------------
+
+#### [**Conclusion**]{style="color: #dc3545;"}
+
+These studies corroborate our findings, emphasizing that [**Process Innovation**]{style="color: #28a745;"} is integral to enhancing the performance of IS project teams. Fostering a disciplined approach to innovation processes and aligning these with team goals can lead to improved project outcomes.
+:::
