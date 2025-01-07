@@ -1,57 +1,77 @@
-
-This repository contains the project file Innovation Capabilities of IS Project Teams.qmd, which analyzes the innovation capabilities of IS project teams. The analysis is based on a structured questionnaire that evaluates six dimensions of IT project paradoxes. The final report includes statistical insights, visualizations, and regression models.
+Innovation Capabilities of IS Project Teams
+This repository contains the project file Innovation Capabilities of IS Project Teams.qmd, which analyzes the innovation capabilities of IS project teams based on a structured questionnaire. The analysis includes both descriptive and inferential statistical methods, supported by visualizations and regression modeling.
 
 Project Overview
 Objective:
-The primary goal of this project is to study the key factors influencing the innovation capabilities of IS project teams. Using quantitative methods, the data collected from a structured questionnaire has been analyzed to uncover patterns and relationships.
+The primary goal of this project is to explore factors influencing innovation capabilities in IS project teams. Using quantitative methods, the data collected from a questionnaire has been analyzed to uncover patterns and relationships.
 
 Data:
-Source: Questionnaire with six dimensions of IT project paradoxes.
-Format: CSV file with:
-12 numerical variables
-3 categorical variables
-Dimensions Evaluated:
+Source: Questionnaire with six dimensions of IT project paradoxes:
 Work atmosphere during the project
 Socialisation and collaboration
 Project coordination
 Knowledge sharing and management
 Project performance
 Project characteristics
+Format: CSV file with:
+12 numerical variables
+3 categorical variables
 Methodology
 The analysis follows these steps:
 
 Data Loading and Preprocessing:
 
-Cleaned and prepared the dataset for analysis.
-Handled missing values and ensured consistency across variables.
+Imported the dataset (PARA5.csv) and prepared it for analysis.
+Addressed missing values and ensured data consistency.
 Descriptive Analysis:
 
-Computed measures such as mean, variance, and distribution.
-Visualizations include bar charts, histograms, and box plots.
+Measures such as mean, variance, and distribution were computed.
+Visualizations were created to explore the spread and tendency of data.
 Inferential Analysis:
 
-Conducted ANOVA tests to identify group differences.
-Performed linear regression modeling to explore relationships between variables.
+ANOVA Tests: Conducted to examine significant group differences.
+Linear Regression Modeling: Explored relationships between numerical variables.
 Visualization:
 
-Created detailed static plots (e.g., histograms, scatter plots) using ggplot2.
-Added interactive plots with plotly for better exploration.
+Static plots (e.g., histograms, box plots) using ggplot2.
+Interactive plots with plotly for deeper insights.
 Results:
 
-Identified significant relationships between project dimensions.
-Regression equations provided insights into the factors driving innovation.
-Outputs
-Main Deliverables:
+Identified significant patterns and relationships.
+Regression equations provided quantitative insights into innovation factors.
+Key Outputs
 HTML Report:
-A self-contained report summarizing the entire analysis, ready to share or view in any browser.
+A self-contained report summarizing the entire analysis.
 Visualizations:
-Graphs and plots to represent trends, distributions, and relationships within the data.
+Graphs and plots to illustrate trends and relationships in the data.
 Key Findings:
-Insightful summaries of the statistical analysis and regression results.
+Insightful summaries of statistical analysis and regression results.
+Visualizations
+1. Data Distribution Visualization
+Description:
+This section visualizes the distribution of key numerical variables. The histogram below illustrates the distribution of Project Performance, showing the spread and central tendency of responses.
+
+
+2. Correlation Matrix
+Description:
+To understand the relationships between numerical variables, a correlation matrix was created. The heatmap below highlights the strength and direction of relationships between variables.
+
+
+3. ANOVA Results Visualization
+Description:
+This visualization shows the results of the ANOVA tests. The box plot below highlights variations in Project Performance across different Project Characteristics categories.
+
+
+4. Linear Regression Analysis
+Description:
+The scatter plot below, along with the regression line, demonstrates the relationship between Project Coordination and Project Performance, providing insights into the strength and direction of the association.
+
+
 Repository Structure
 Innovation Capabilities of IS Project Teams.qmd: The main Quarto Markdown file containing the analysis code and documentation.
 report.html: The final self-contained HTML report.
 PARA5.csv: The dataset used for analysis.
+images/: Folder containing all visualizations.
 README.md: This documentation file.
 How to View the Results
 Clone this repository:
@@ -59,17 +79,7 @@ bash
 Copy code
 git clone https://github.com/USERNAME/REPOSITORY_NAME.git
 Open the report.html file in any browser to view the analysis and results.
-Adding Visuals to README
-If you wish to include images or plots in the README file (e.g., sample visualizations from the analysis), follow these steps:
-
-Save the plot or chart as an image (e.g., png or jpg).
-Upload the image to the repository (e.g., in an images folder).
-Reference the image in the README using Markdown syntax:
-markdown
-Copy code
-![Sample Visualization](images/sample_plot.png)
-Example:
-Packages Used
+Required Packages
 Data Processing:
 readr, dplyr, tidyr
 Visualization:
@@ -78,77 +88,14 @@ Statistical Analysis:
 lmtest, car, psych
 Rendering:
 quarto, rmarkdown, knitr
-How to Reproduce
-Install required packages:
+Install these packages in R:
+
 r
 Copy code
 install.packages(c("readr", "dplyr", "tidyr", "ggplot2", "plotly", "lmtest", "car", "psych", "quarto", "rmarkdown", "knitr"))
+How to Reproduce
 Open the Innovation Capabilities of IS Project Teams.qmd file in RStudio or a Quarto-supported editor.
 Render the file:
 bash
 Copy code
 quarto render "Innovation Capabilities of IS Project Teams.qmd"
-این نسخه کاملاً توضیح‌دهنده است. اگر تصویری خاص یا نموداری می‌خواهید اضافه کنید، می‌توانید با روش ذکرشده این کار را انجام دهید. همچنین اگر بخواهید قسمتی اصلاح شود، اطلاع دهید!
-
-
-
-
-
-You said:
-خب اونجاهایی که قراره شکل بذارم توضیحات بالاش بنویس لطفا مثلا راجع به اینکه توی این بخش چکار کردیم و زیر تصویر بذارم 
-ChatGPT said:
-
-بسیار خوب! می‌توانید توضیحات مربوط به بخش‌هایی که نیاز به نمودار یا تصویر دارند را به شکل زیر در فایل README.md بگنجانید. این توضیحات به طور دقیق مشخص می‌کند که چه کاری در آن بخش انجام شده و تصویر چگونه به درک بهتر تحلیل کمک می‌کند.
-
-1. Data Distribution Visualization
-Description:
-In this section, we visualized the distribution of key numerical variables in the dataset. The histogram below shows the distribution of Project Performance scores, helping us understand the tendency and spread of responses across the scale.
-
-Example Markdown for README:
-
-markdown
-Copy code
-### Data Distribution Visualization
-
-In this section, we visualized the distribution of key numerical variables in the dataset. The histogram below shows the distribution of **Project Performance** scores, helping us understand the tendency and spread of responses across the scale.
-
-![Histogram of Project Performance](images/project_performance_histogram.png)
-2. Correlation Matrix
-Description:
-To understand the relationships between different numerical variables, a correlation matrix was created. The heatmap below highlights the strength and direction of relationships between variables such as Work Atmosphere, Collaboration, and Project Coordination.
-
-Example Markdown for README:
-
-markdown
-Copy code
-### Correlation Matrix
-
-To understand the relationships between different numerical variables, a correlation matrix was created. The heatmap below highlights the strength and direction of relationships between variables such as **Work Atmosphere**, **Collaboration**, and **Project Coordination**.
-
-![Correlation Matrix](images/correlation_matrix.png)
-3. ANOVA Results Visualization
-Description:
-This section visualizes the results of the ANOVA tests performed on different categorical variables to examine group differences. The box plot below shows the variation in Project Performance across different Project Characteristics categories.
-
-Example Markdown for README:
-
-markdown
-Copy code
-### ANOVA Results Visualization
-
-This section visualizes the results of the ANOVA tests performed on different categorical variables to examine group differences. The box plot below shows the variation in **Project Performance** across different **Project Characteristics** categories.
-
-![Box Plot for ANOVA Results](images/anova_boxplot.png)
-4. Linear Regression Analysis
-Description:
-Linear regression analysis was used to model the relationship between Project Coordination and Project Performance. The scatter plot below, with a fitted regression line, shows the strength and direction of this relationship.
-
-Example Markdown for README:
-
-markdown
-Copy code
-### Linear Regression Analysis
-
-Linear regression analysis was used to model the relationship between **Project Coordination** and **Project Performance**. The scatter plot below, with a fitted regression line, shows the strength and direction of this relationship.
-
-![Linear Regression Plot](images/linear_regression_plot.png)
